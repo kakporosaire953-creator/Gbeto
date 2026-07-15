@@ -1,0 +1,15 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { ArrowLeft, Check, Gift, LockKeyhole, Minus, Plus, ShieldCheck, Trash2, Truck } from "lucide-react";
+import { StoreHeader } from "@/components/store-header";
+import { catalog, formatXof } from "@/lib/catalog";
+
+export default function CartPage() {
+  const [quantities,setQuantities]=useState([1,2]); const [diaspora,setDiaspora]=useState(false); const items=[catalog[0],catalog[2]];
+  const subtotal=items.reduce((sum,item,index)=>sum+item.price*quantities[index],0); const delivery=subtotal>=25000?0:1500;
+  const change=(index:number,delta:number)=>setQuantities((current)=>current.map((value,i)=>i===index?Math.max(1,value+delta):value));
+  return <div><StoreHeader/><main className="cart-page"><div className="checkout-steps"><span className="active"><i>1</i>Panier</span><b/><span><i>2</i>Livraison</span><b/><span><i>3</i>Paiement</span></div><div className="cart-title"><div><p className="eyebrow">Votre sélection</p><h1>Mon panier</h1></div><Link href="/catalogue"><ArrowLeft/>Continuer mes achats</Link></div><div className="cart-layout"><section className="cart-items"><div className="cart-group-title"><div><strong>Atelier & producteurs locaux</strong><span>Expédié depuis le Bénin</span></div><span><Check/>Vendeurs vérifiés</span></div>{items.map((item,index)=><article className="cart-item" key={item.slug}><div className="cart-image"><Image fill src={item.image} alt={item.name}/></div><div className="cart-item-copy"><p>{item.maker} · {item.location}</p><h2>{item.name}</h2><small>Indigo profond · Disponible</small><div className="quantity compact"><button onClick={()=>change(index,-1)} aria-label="Diminuer"><Minus/></button><span>{quantities[index]}</span><button onClick={()=>change(index,1)} aria-label="Augmenter"><Plus/></button></div></div><strong>{formatXof(item.price*quantities[index])}</strong><button className="remove" aria-label={`Retirer ${item.name}`}><Trash2/></button></article>)}<label className="diaspora-option"><input type="checkbox" checked={diaspora} onChange={(event)=>setDiaspora(event.target.checked)}/><Gift/><div><strong>Cette commande est un cadeau pour un proche</strong><span>Je renseignerai le bénéficiaire et son adresse à l’étape suivante.</span></div></label></section><aside className="cart-summary"><h2>Récapitulatif</h2><dl><div><dt>Sous-total</dt><dd>{formatXof(subtotal)}</dd></div><div><dt>Livraison</dt><dd className={delivery===0?"free":""}>{delivery===0?"Offerte":formatXof(delivery)}</dd></div>{diaspora&&<div><dt>Option cadeau</dt><dd>Incluse</dd></div>}<div className="total"><dt>Total</dt><dd>{formatXof(subtotal+delivery)}</dd></div></dl><p className="currency-note">Prix final en XOF. Le montant EUR/USD et le taux seront confirmés avant paiement.</p><button className="checkout-button">Choisir la livraison</button><div className="summary-trust"><span><LockKeyhole/>Paiement chiffré</span><span><ShieldCheck/>Fonds protégés</span><span><Truck/>Suivi en temps réel</span></div></aside></div></main></div>;
+}

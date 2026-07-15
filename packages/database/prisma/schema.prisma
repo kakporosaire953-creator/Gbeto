@@ -1,0 +1,197 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+enum Role { BUYER SELLER COURIER SUPPORT COMPLIANCE ADMIN SUPER_ADMIN }
+enum KycStatus { NOT_STARTED PENDING VERIFIED REJECTED SUSPENDED }
+enum ProductStatus { DRAFT PENDING ACTIVE REJECTED ARCHIVED }
+enum OrderStatus { PENDING_PAYMENT PAID ACCEPTED IN_TRANSIT DELIVERED DISPUTED REFUNDED CANCELLED }
+enum PaymentStatus { CREATED PENDING SUCCEEDED FAILED REFUNDED }
+enum DeliveryStatus { UNASSIGNED ASSIGNED PICKED_UP IN_TRANSIT DELIVERED FAILED }
+enum LedgerKind { PAYMENT PLATFORM_FEE SELLER_PAYABLE ESCROW_HOLD ESCROW_RELEASE REFUND TONTINE_CONTRIBUTION TONTINE_PAYOUT }
+
+model User {
+  id String @id @default(cuid())
+  email String? @unique
+  phone String @unique
+  displayName String
+  locale String @default("fr")
+  roles Role[] @default([BUYER])
+  kycStatus KycStatus @default(NOT_STARTED)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  addresses Address[]
+  stores Store[]
+  orders Order[] @relation("BuyerOrders")
+  deliveries Delivery[] @relation("CourierDeliveries")
+  auditEvents AuditEvent[]
+}
+
+model Address {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label String
+  recipientName String
+  phone String
+  city String
+  neighborhood String?
+  directions String?
+  latitude Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+  isDefault Boolean @default(false)
+  orders Order[]
+}
+
+model Store {
+  id String @id @default(cuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id])
+  slug String @unique
+  name String
+  description String?
+  verifiedAt DateTime?
+  commissionBps Int @default(900)
+  products Product[]
+  orderItems OrderItem[]
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id String @id @default(cuid())
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
+  slug String @unique
+  sku String
+  status ProductStatus @default(DRAFT)
+  title Json
+  description Json
+  category String
+  priceMinor BigInt
+  currency String @default("XOF")
+  stock Int @default(0)
+  media Json
+  attributes Json?
+  orderItems OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([storeId, sku])
+  @@index([category, status])
+}
+
+model Order {
+  id String @id @default(cuid())
+  number String @unique
+  buyerId String
+  buyer User @relation("BuyerOrders", fields: [buyerId], references: [id])
+  addressId String
+  address Address @relation(fields: [addressId], references: [id])
+  status OrderStatus @default(PENDING_PAYMENT)
+  currency String
+  subtotalMinor BigInt
+  deliveryMinor BigInt
+  totalMinor BigInt
+  diasporaGift Boolean @default(false)
+  idempotencyKey String @unique
+  items OrderItem[]
+  payments Payment[]
+  delivery Delivery?
+  dispute Dispute?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([buyerId, createdAt])
+}
+
+model OrderItem {
+  id String @id @default(cuid())
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  productId String
+  product Product @relation(fields: [productId], references: [id])
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
+  quantity Int
+  unitPriceMinor BigInt
+  sellerPayableMinor BigInt
+  snapshot Json
+}
+
+model Payment {
+  id String @id @default(cuid())
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  provider String
+  providerReference String? @unique
+  status PaymentStatus @default(CREATED)
+  amountMinor BigInt
+  currency String
+  idempotencyKey String @unique
+  metadata Json?
+  ledgerEntries LedgerEntry[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LedgerEntry {
+  id String @id @default(cuid())
+  paymentId String?
+  payment Payment? @relation(fields: [paymentId], references: [id])
+  kind LedgerKind
+  account String
+  amountMinor BigInt
+  currency String
+  reference String
+  createdAt DateTime @default(now())
+  @@index([account, createdAt])
+}
+
+model Delivery {
+  id String @id @default(cuid())
+  orderId String @unique
+  order Order @relation(fields: [orderId], references: [id])
+  courierId String?
+  courier User? @relation("CourierDeliveries", fields: [courierId], references: [id])
+  status DeliveryStatus @default(UNASSIGNED)
+  pickup Json
+  dropoff Json
+  trackingCode String @unique
+  proof Json?
+  lastLatitude Decimal? @db.Decimal(10, 7)
+  lastLongitude Decimal? @db.Decimal(10, 7)
+  updatedAt DateTime @updatedAt
+}
+
+model Dispute {
+  id String @id @default(cuid())
+  orderId String @unique
+  order Order @relation(fields: [orderId], references: [id])
+  reason String
+  status String @default("OPEN")
+  evidence Json
+  resolution String?
+  createdAt DateTime @default(now())
+}
+
+model TontineGroup {
+  id String @id @default(cuid())
+  name String
+  status String @default("COMPLIANCE_HOLD")
+  currency String
+  contributionMinor BigInt
+  frequency String
+  rules Json
+  createdAt DateTime @default(now())
+}
+
+model AuditEvent {
+  id String @id @default(cuid())
+  actorId String?
+  actor User? @relation(fields: [actorId], references: [id])
+  action String
+  resourceType String
+  resourceId String
+  ipHash String?
+  before Json?
+  after Json?
+  createdAt DateTime @default(now())
+  @@index([resourceType, resourceId, createdAt])
+}

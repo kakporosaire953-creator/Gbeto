@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: Gbéto API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200": { description: Service disponible }
+  /catalog:
+    get:
+      operationId: listCatalog
+      parameters:
+        - { in: query, name: locale, schema: { type: string, enum: [fr, fon, yo, en, ln] } }
+        - { in: query, name: currency, schema: { type: string, enum: [XOF, EUR, USD] } }
+        - { in: query, name: cursor, schema: { type: string } }
+      responses:
+        "200": { description: Page de produits }
+  /checkout/quote:
+    post:
+      operationId: createQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amountMinor, currency]
+              properties:
+                amountMinor: { type: integer, minimum: 1 }
+                currency: { type: string, enum: [XOF, EUR, USD] }
+      responses:
+        "201": { description: Devis valable quinze minutes }
+        "400": { description: Entrée invalide }
+  /orders/{id}/state:
+    patch:
+      operationId: transitionOrder
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string } }
+        - { in: header, name: Idempotency-Key, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [state]
+              properties:
+                state: { type: string, enum: [PAID, ACCEPTED, IN_TRANSIT, DELIVERED, DISPUTED, REFUNDED] }
+      responses:
+        "200": { description: Commande mise à jour }
+        "400": { description: Transition interdite }
+        "403": { description: Permission insuffisante }
+  /payments/webhooks/fedapay:
+    post:
+      operationId: receivePaymentWebhook
+      description: La signature, l'horodatage et l'identifiant d'événement sont vérifiés avant mise en file idempotente.
+      responses:
+        "202": { description: Événement accepté }
+        "503": { description: Signature absente ou invalide }
+  /regulated/{flow}:
+    post:
+      operationId: startRegulatedFlow
+      parameters:
+        - { in: path, name: flow, required: true, schema: { type: string, enum: [escrow, tontine] } }
+      responses:
+        "201": { description: Flux créé après validation conformité }
+        "503": { description: Flux désactivé par garde-fou conformité }

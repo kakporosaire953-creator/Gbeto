@@ -1,0 +1,8 @@
+{
+  "name": "@gbeto/database",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": { "db:generate": "prisma generate", "db:migrate": "prisma migrate dev", "build": "prisma generate", "lint": "prisma validate", "typecheck": "prisma validate" },
+  "dependencies": { "@prisma/client": "^6.9.0" },
+  "devDependencies": { "prisma": "^6.9.0" }
+}
