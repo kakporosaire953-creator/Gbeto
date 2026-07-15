@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "installCommand": "corepack enable && corepack prepare pnpm@10.12.1 --activate && pnpm install",
+  "buildCommand": "cd apps/web && pnpm build",
   "framework": "nextjs",
   "headers": [
     {

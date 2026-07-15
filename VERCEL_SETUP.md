@@ -12,11 +12,9 @@
 
 **Framework Preset** : Next.js (détecté automatiquement)
 
-**Root Directory** : Cliquez sur "Edit" et sélectionnez `apps/web`
+**Root Directory** : Laissez vide (configuration à la racine du monorepo)
 
-Vercel détectera automatiquement le monorepo grâce au `packageManager` dans `package.json`.
-
-Ne modifiez pas les commandes de build, Vercel les détectera automatiquement.
+Les commandes de build et d'installation sont déjà configurées dans `vercel.json` pour utiliser pnpm.
 
 ### Étape 3 : Variables d'environnement
 
