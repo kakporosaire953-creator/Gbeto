@@ -1,0 +1,117 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
+      turbo:
+        specifier: ^2.5.4
+        version: 2.5.4
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  apps/api:
+    dependencies:
+      '@nestjs/common':
+        specifier: ^11.1.3
+        version: 11.1.3
+      '@nestjs/core':
+        specifier: ^11.1.3
+        version: 11.1.3
+      '@nestjs/platform-express':
+        specifier: ^11.1.3
+        version: 11.1.3
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1
+      class-validator:
+        specifier: ^0.14.2
+        version: 0.14.2
+      helmet:
+        specifier: ^8.1.0
+        version: 8.1.0
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
+    devDependencies:
+      '@nestjs/cli':
+        specifier: ^11.0.7
+        version: 11.0.7
+      '@types/express':
+        specifier: ^5.0.3
+        version: 5.0.3
+      '@types/node':
+        specifier: ^22.15.31
+        version: 22.15.31
+      tsx:
+        specifier: ^4.20.3
+        version: 4.20.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  apps/web:
+    dependencies:
+      '@gbeto/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@tanstack/react-query':
+        specifier: ^5.80.7
+        version: 5.80.7
+      framer-motion:
+        specifier: ^12.18.1
+        version: 12.18.1
+      lucide-react:
+        specifier: ^0.515.0
+        version: 0.515.0
+      next:
+        specifier: 15.3.3
+        version: 15.3.3
+      react:
+        specifier: 19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: 19.1.0
+        version: 19.1.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.31
+        version: 22.15.31
+      '@types/react':
+        specifier: ^19.1.8
+        version: 19.1.8
+      '@types/react-dom':
+        specifier: ^19.1.6
+        version: 19.1.6
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/config:
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/database:
+    dependencies:
+      '@prisma/client':
+        specifier: ^6.9.0
+        version: 6.9.0
+    devDependencies:
+      prisma:
+        specifier: ^6.9.0
+        version: 6.9.0
+
+packages: {}
