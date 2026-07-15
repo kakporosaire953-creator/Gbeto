@@ -8,43 +8,21 @@ Le projet Gbéto utilise une architecture **découplée** :
 - **Base de données PostgreSQL** : Service géré externe requis
 - **Redis** : Service géré externe requis
 
-## 🚀 Déploiement du Frontend sur Vercel
+## 🚀 Déploiement rapide
 
-### Option 1 : Déploiement via l'interface Vercel (recommandé)
+1. **Vercel (Frontend)** : Voir `VERCEL_DEPLOYMENT.md`
+2. **Railway/Render (API)** : Voir ci-dessous
 
-1. **Connecter votre repository**
-   - Allez sur [vercel.com](https://vercel.com)
-   - Cliquez sur "Add New Project"
-   - Importez votre repository GitHub/GitLab/Bitbucket
+### Configuration simple
 
-2. **Configuration du projet**
-   - **Framework Preset** : Next.js
-   - **Root Directory** : `apps/web`
-   - **Build Command** : `cd ../.. && pnpm turbo build --filter=@gbeto/web`
-   - **Output Directory** : `.next`
-   - **Install Command** : `cd ../.. && pnpm install`
+1. Allez sur [vercel.com/new](https://vercel.com/new)
+2. Importez le repository : `kakporosaire953-creator/Gbeto`
+3. **Root Directory** : Sélectionnez `apps/web`
+4. Ajoutez la variable d'environnement :
+   - `NEXT_PUBLIC_API_URL` = `http://localhost:4000/api/v1`
+5. Déployez
 
-3. **Variables d'environnement**
-   Ajoutez ces variables dans les settings du projet :
-   ```
-   NEXT_PUBLIC_API_URL=https://votre-api-backend.com/api/v1
-   ```
-
-### Option 2 : Déploiement via CLI
-
-```bash
-# Installer Vercel CLI
-pnpm add -g vercel
-
-# Se connecter
-vercel login
-
-# Déployer depuis la racine du projet
-vercel
-
-# Ou déployer en production
-vercel --prod
-```
+**Guide détaillé** : Voir `VERCEL_DEPLOYMENT.md`
 
 ## 📋 Variables d'environnement à configurer
 
