@@ -14,17 +14,9 @@
 
 **Root Directory** : Cliquez sur "Edit" et sélectionnez `apps/web`
 
-**Build Command** : 
-```bash
-cd ../.. && pnpm turbo build --filter=@gbeto/web
-```
+Vercel détectera automatiquement le monorepo grâce au `packageManager` dans `package.json`.
 
-**Output Directory** : `.next` (par défaut)
-
-**Install Command** :
-```bash
-cd ../.. && pnpm install
-```
+Ne modifiez pas les commandes de build, Vercel les détectera automatiquement.
 
 ### Étape 3 : Variables d'environnement
 
