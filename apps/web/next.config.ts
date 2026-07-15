@@ -1,14 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
   experimental: { optimizePackageImports: ["lucide-react", "framer-motion"] },
   images: {
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
   },
+  basePath: process.env.GITHUB_PAGES ? '/Gbeto' : '',
   async headers() {
     return [{
       source: "/(.*)",
